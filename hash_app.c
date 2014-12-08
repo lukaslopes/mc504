@@ -5,63 +5,50 @@
 #include <string.h>
 #include <sys/ioctl.h>
  
-#include "query_ioctl.h"
+#include "hash_ioctl.h"
  
 void get_vars(int fd)
 {
-    query_arg_t q;
+    hash_arg_t h;
  
-    if (ioctl(fd, QUERY_GET_VARIABLES, &q) == -1)
+    if (ioctl(fd, GET_HASH, &h) == -1)
     {
-        perror("query_apps ioctl get");
+        perror("hash_apps ioctl get");
     }
     else
     {
-        printf("Status : %d\n", q.status);
-        printf("Dignity: %d\n", q.dignity);
-        printf("Ego    : %d\n", q.ego);
+        printf("Hash Password: %s\n", h.hash);
     }
 }
-void clr_vars(int fd)
+void ers_vars(int fd)
 {
-    if (ioctl(fd, QUERY_CLR_VARIABLES) == -1)
+    if (ioctl(fd, ERS_HASH) == -1)
     {
-        perror("query_apps ioctl clr");
+        perror("hash_apps ioctl erase");
     }
 }
 void set_vars(int fd)
 {
-    int v;
-    query_arg_t q;
+    hash_arg_t h;
  
-    printf("Enter Status: ");
-    scanf("%d", &v);
-    getchar();
-    q.status = v;
-    printf("Enter Dignity: ");
-    scanf("%d", &v);
-    getchar();
-    q.dignity = v;
-    printf("Enter Ego: ");
-    scanf("%d", &v);
-    getchar();
-    q.ego = v;
+    printf("Enter Password: ");
+    scanf("%s", &h.hash);
  
-    if (ioctl(fd, QUERY_SET_VARIABLES, &q) == -1)
+    if (ioctl(fd, SET_HASH, &h) == -1)
     {
-        perror("query_apps ioctl set");
+        perror("hash_apps ioctl set");
     }
 }
  
 int main(int argc, char *argv[])
 {
-    char *file_name = "/dev/query";
+    char *file_name = "/dev/hash";
     int fd;
     enum
     {
         e_get,
-        e_clr,
-        e_set
+        e_ers,
+        e_set,
     } option;
  
     if (argc == 1)
@@ -74,9 +61,9 @@ int main(int argc, char *argv[])
         {
             option = e_get;
         }
-        else if (strcmp(argv[1], "-c") == 0)
+        else if (strcmp(argv[1], "-e") == 0)
         {
-            option = e_clr;
+            option = e_ers;
         }
         else if (strcmp(argv[1], "-s") == 0)
         {
@@ -90,13 +77,13 @@ int main(int argc, char *argv[])
     }
     else
     {
-        fprintf(stderr, "Usage: %s [-g | -c | -s]\n", argv[0]);
+		fprintf(stderr, "Usage: %s [-g | -c | -s]\n", argv[0]);
         return 1;
     }
     fd = open(file_name, O_RDWR);
     if (fd == -1)
     {
-        perror("query_apps open");
+        perror("hash_apps open");
         return 2;
     }
  
@@ -105,8 +92,8 @@ int main(int argc, char *argv[])
         case e_get:
             get_vars(fd);
             break;
-        case e_clr:
-            clr_vars(fd);
+        case e_ers:
+            ers_vars(fd);
             break;
         case e_set:
             set_vars(fd);
