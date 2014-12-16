@@ -13,4 +13,6 @@ typedef struct
 #define GET_HASH _IOR('h', 1, hash_arg_t *)
 #define ERS_HASH _IO('h', 2)
 #define SET_HASH _IOW('h', 3, hash_arg_t *)
+#define CMP_HASH _IOW('h', 4, hash_arg_t *)
+ 
 #endif

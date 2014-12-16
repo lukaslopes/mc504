@@ -39,6 +39,26 @@ void set_vars(int fd)
         perror("hash_apps ioctl set");
     }
 }
+
+void cmp_vars(int fd)
+{
+    hash_arg_t h;
+ 
+    printf("Enter Password: ");
+    scanf("%s", &h.hash);
+ 
+    if (ioctl(fd, CMP_HASH, &h) == -1)
+    {
+        perror("hash_apps ioctl compare");
+    }
+	else
+	{
+		if(h.hash_match == 1)
+			printf("Password Match\n");
+		else
+			printf("Password Didn't Match\n");
+	}
+}
  
 int main(int argc, char *argv[])
 {
@@ -49,6 +69,7 @@ int main(int argc, char *argv[])
         e_get,
         e_ers,
         e_set,
+		e_cmp
     } option;
  
     if (argc == 1)
@@ -69,15 +90,19 @@ int main(int argc, char *argv[])
         {
             option = e_set;
         }
+		else if (strcmp(argv[1], "-c") == 0)
+        {
+            option = e_cmp;
+        }
         else
         {
-            fprintf(stderr, "Usage: %s [-g | -c | -s]\n", argv[0]);
+            fprintf(stderr, "Usage: %s [-g | -e | -c | -s]\n", argv[0]);
             return 1;
         }
     }
     else
     {
-		fprintf(stderr, "Usage: %s [-g | -c | -s]\n", argv[0]);
+		fprintf(stderr, "Usage: %s [-g | -e | -c | -s]\n", argv[0]);
         return 1;
     }
     fd = open(file_name, O_RDWR);
@@ -97,6 +122,9 @@ int main(int argc, char *argv[])
             break;
         case e_set:
             set_vars(fd);
+            break;
+		case e_cmp:
+            cmp_vars(fd);
             break;
         default:
             break;

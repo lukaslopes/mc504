@@ -65,6 +65,18 @@ static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 			}
 			hash(hash, h.hash);
 		break;
+
+		case CMP_HASH:
+			char nhash[MAX_SIZE];
+			if (copy_from_user(&h, (hash_arg_t *)arg, sizeof(hash_arg_t)))
+			{
+				return -EACCES;
+			}
+			if(strcmp(hash(nhhash, h.hash), hash) == 0)
+				h.hash_match = 1;
+			else
+				h.hash_match = 1;
+		break;
 		
 		default:
 			return -EINVAL;
