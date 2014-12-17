@@ -1,7 +1,7 @@
 MC 504 2s2014 - Device Driver
+=====
 Lukas Antunes Lopes - 117856
 Vitor Rocha dos Santos - 118941
-=====
 
 O driver:
 Nosso projeto desenvolve um driver que armazena uma senha em forma de hash.
@@ -10,6 +10,10 @@ Uma senha deve ser passada ao driver, que transforma essa senha em hash e a mant
 
 
 Instruções:
+
+-Rodar os seguintes comandos para compilar em 32bits:
+    export CFLAGS=-m32
+    export LDFLAGS=-m32
 
 - Na pasta do que contém o kernel do linux, crie uma pasta "myhash" em linux-3.17.2/drivers 
 
