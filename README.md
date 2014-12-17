@@ -15,6 +15,9 @@ Instruções:
 
 - Copie os arquivos "hash_ioctl.c", "hash_app.c", "hash_ioctl.h" e "Makefile" para a pasta myhash 
 
+- Altere o arquivo Makefile na linha
+    KERNEL_SOURCE := {{ Coloque aqui o diretoroo da pasta linux-3.17.2}}
+
 - Faça "$ make" nessa pasta.
 
 - altere o Makefile do diretório drivers acrescentando a linha
