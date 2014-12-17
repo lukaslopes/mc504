@@ -16,6 +16,7 @@ static dev_t dev;
 static struct cdev c_dev;
 static struct class *cl;
 static char hash[MAXSIZE] = "";
+static char nhash[MAXSIZE] = "";
 
 char *strcpy(char *dst, const char *src)
 {
@@ -39,17 +40,13 @@ int my_strcmp(char *first, char *second)
       return -1;
 }
 
-char *myhash(char *h, const char *str) {
+void myhash(char *h, const char *str) {
 	char *s = h;
 	int i = 0;
     while (str[i] != '\0'){
-		s[i] = str[i%MAXSIZE] + str[i%MAXSIZE+1];
-		s[i] = s[i] % 122;
-		if(s[i] < 48)
-			s[i] = s[i] + 48;
+		s[i] = str[i] + HASH_CODE;
 		i++;
 	}
-	return s;
 }
 
 static int my_open(struct inode *i, struct file *f) {
@@ -65,7 +62,6 @@ static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 #endif
 {
 	hash_arg_t h;
-	char nhash[MAXSIZE] = "";
 
 	switch (cmd) {
 
@@ -95,7 +91,7 @@ static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 			}
 
 			myhash(nhash, h.hash);
-			if(my_strcmp(nhash, hash) == 0)
+			if(my_strcmp(hash, nhash) == 0)
 				h.hash_match = 1;
 			else
 				h.hash_match = -1;

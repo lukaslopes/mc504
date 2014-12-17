@@ -6,6 +6,15 @@
 #include <sys/ioctl.h>
  
 #include "hash_ioctl.h"
+
+void myhash(char *h, const char *str) {
+	char *s = h;
+	int i = 0;
+    while (str[i] != '\0'){
+		s[i] = str[i] + HASH_CODE;
+		i++;
+	}
+}
  
 void get_vars(int fd)
 {
@@ -25,28 +34,12 @@ void get_vars(int fd)
 }
 void ers_vars(int fd)
 {
-
-	hash_arg_t h;
- 
-    printf("Enter Password to Erase Hash: ");
-    scanf("%s", &h.hash);
- 
-	if (ioctl(fd, CMP_HASH, &h) == -1)
-    {
-        perror("hash_apps ioctl compare");
-    }
-	else
+	if (ioctl(fd, ERS_HASH) == -1)
 	{
-		if(h.hash_match == 1)
-			if (ioctl(fd, ERS_HASH) == -1)
-			{
-				perror("hash_apps ioctl erase");
-			}
-			else{
-				printf("Hash Erased\n");
-			}
-		else
-			printf("Password Didn't Match. Hash Not Erased\n");
+		perror("hash_apps ioctl erase");
+	}
+	else{
+		printf("Hash Erased\n");
 	}
 }
 void set_vars(int fd)
@@ -65,21 +58,27 @@ void set_vars(int fd)
 void cmp_vars(int fd)
 {
     hash_arg_t h;
- 
-    printf("Enter Password: ");
-    scanf("%s", &h.hash);
- 
-    if (ioctl(fd, CMP_HASH, &h) == -1)
+	char newhash[MAXSIZE] = ""; 
+	char pass[MAXSIZE] = ""; 
+    
+	printf("Enter Password: ");
+    scanf("%s", pass);
+
+	myhash(newhash, pass);
+	newhash[8] = '\0';
+
+	if (ioctl(fd, GET_HASH, &h) == -1)
     {
-        perror("hash_apps ioctl compare");
+        perror("hash_apps ioctl get");
     }
-	else
-	{
-		if(h.hash_match == 1)
-			printf("Password Match\n");
+    else
+    {
+		if (strcmp(h.hash, newhash) == 0)        
+			printf("Password Matched with Hash\n");
 		else
-			printf("Password Didn't Match\n");
-	}
+			printf("Password differs from hash\n");
+    }
+
 }
  
 int main(int argc, char *argv[])
