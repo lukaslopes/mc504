@@ -15,20 +15,41 @@
 static dev_t dev;
 static struct cdev c_dev;
 static struct class *cl;
-char hash[MAXSIZE] = "";
+static char hash[MAXSIZE] = "";
 
-char *strcpy(char *dst, char *src)
+char *strcpy(char *dst, const char *src)
 {
-    while(*dst++ = *src++);
+    while(	((*dst++) = (*src++)));
     return dst;
 }
 
-char* hash(char *hash, char *str) {
-	    char *s = hash;
-    while (*str != '0'){
-		*s++ = (*str++) + (*str)
+int my_strcmp(char *first, char *second)
+{
+	while(*first==*second)
+   {
+      if ( *first == '\0' || *second == '\0' )
+         break;
+ 
+      first++;
+      second++;
+   }
+   if( *first == '\0' && *second == '\0' )
+      return 0;
+   else
+      return -1;
+}
+
+char *myhash(char *h, const char *str) {
+	char *s = h;
+	int i = 0;
+    while (str[i] != '\0'){
+		s[i] = str[i%MAXSIZE] + str[i%MAXSIZE+1];
+		s[i] = s[i] % 122;
+		if(s[i] < 48)
+			s[i] = s[i] + 48;
+		i++;
 	}
-    return s;
+	return s;
 }
 
 static int my_open(struct inode *i, struct file *f) {
@@ -44,6 +65,7 @@ static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 #endif
 {
 	hash_arg_t h;
+	char nhash[MAXSIZE] = "";
 
 	switch (cmd) {
 
@@ -54,7 +76,7 @@ static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 			}
 		break;
 	
-		case CLR_HASH:
+		case ERS_HASH:
 			strcpy(hash, "");
 		break;
 	
@@ -63,19 +85,25 @@ static long my_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 			{
 				return -EACCES;
 			}
-			hash(hash, h.hash);
+			myhash(hash, h.hash);
 		break;
 
 		case CMP_HASH:
-			char nhash[MAX_SIZE];
 			if (copy_from_user(&h, (hash_arg_t *)arg, sizeof(hash_arg_t)))
 			{
 				return -EACCES;
 			}
-			if(strcmp(hash(nhhash, h.hash), hash) == 0)
+
+			myhash(nhash, h.hash);
+			if(my_strcmp(nhash, hash) == 0)
 				h.hash_match = 1;
 			else
-				h.hash_match = 1;
+				h.hash_match = -1;
+
+			if (copy_to_user((hash_arg_t *) arg, &h, sizeof(hash_arg_t))) {
+				return -EACCES;
+			}
+
 		break;
 		
 		default:

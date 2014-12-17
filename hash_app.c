@@ -17,15 +17,37 @@ void get_vars(int fd)
     }
     else
     {
-        printf("Hash Password: %s\n", h.hash);
+		if (strcmp(h.hash, "") == 0)        
+			printf("Empty Hash\n");
+		else
+			printf("Hash Password: %s\n", h.hash);
     }
 }
 void ers_vars(int fd)
 {
-    if (ioctl(fd, ERS_HASH) == -1)
+
+	hash_arg_t h;
+ 
+    printf("Enter Password to Erase Hash: ");
+    scanf("%s", &h.hash);
+ 
+	if (ioctl(fd, CMP_HASH, &h) == -1)
     {
-        perror("hash_apps ioctl erase");
+        perror("hash_apps ioctl compare");
     }
+	else
+	{
+		if(h.hash_match == 1)
+			if (ioctl(fd, ERS_HASH) == -1)
+			{
+				perror("hash_apps ioctl erase");
+			}
+			else{
+				printf("Hash Erased\n");
+			}
+		else
+			printf("Password Didn't Match. Hash Not Erased\n");
+	}
 }
 void set_vars(int fd)
 {
