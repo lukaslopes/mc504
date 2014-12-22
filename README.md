@@ -5,6 +5,8 @@ Lukas Antunes Lopes - 117856
 
 Vitor Rocha dos Santos - 118941
 
+GitHub https://github.com/lukaslopes/mc504
+
 O driver:
 Nosso projeto desenvolve um driver que armazena uma senha em forma de hash.
 Para essa aplicação existem várias possibilidades, como proteção de acesso á um pendrive por senha, por exemplo.
